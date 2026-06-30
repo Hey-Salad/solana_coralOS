@@ -6,7 +6,7 @@
 //
 // Default: Jupiter DEX swap quote (SOL → USDC) — no API key needed
 
-const KNOWN_SERVICES = new Set(['jupiter', 'coingecko', 'news', 'inference', 'claude', 'txline'])
+const KNOWN_SERVICES = new Set(['jupiter', 'coingecko', 'news', 'inference', 'claude', 'txline', 'heysalad'])
 
 export async function deliverService(request: string): Promise<string> {
   // The request may NAME a service as its first token — that's how the human checkout's
@@ -31,6 +31,8 @@ export async function deliverService(request: string): Promise<string> {
       return claudeInference(payload)
     case 'txline':
       return txlineService(payload)
+    case 'heysalad':
+      return heySaladService(payload)
     default:
       return jupiterSwapQuote(payload)
   }
@@ -208,4 +210,113 @@ async function txlineService(request: string): Promise<string> {
       return JSON.stringify({ service: 'txline-fixtures', count: list.length, fixtures: list.slice(0, 10) })
     }
   }
+}
+
+// ── HeySalad — AI salad marketplace ──────────────────────────────────────────
+// The seller recommends the best-matching salad from the HeySalad catalog given
+// the buyer's dietary preference request. Returns structured JSON the dashboard
+// renders as a salad card. Request examples: "vegan", "high-protein", "gluten-free raw"
+
+interface HeySaladItem {
+  id: string
+  name: string
+  priceUsd: number
+  description: string
+  dietary: string[]
+  calories: number
+  protein: number
+  supplier: string
+}
+
+const HEYSALAD_CATALOG: HeySaladItem[] = [
+  {
+    id: 'classic-garden',
+    name: 'Classic Garden Bowl',
+    priceUsd: 12.99,
+    description: 'Crisp mixed greens, cherry tomatoes, cucumber, red onion, carrot ribbons with lemon vinaigrette',
+    dietary: ['vegan', 'gluten-free'],
+    calories: 285,
+    protein: 8,
+    supplier: process.env.AGENT_NAME ?? 'heysalad-seller',
+  },
+  {
+    id: 'protein-power',
+    name: 'Protein Power Bowl',
+    priceUsd: 11.99,
+    description: 'Grilled chicken, quinoa, spinach, roasted peppers, edamame, tahini dressing',
+    dietary: ['gluten-free', 'high-protein'],
+    calories: 485,
+    protein: 42,
+    supplier: process.env.AGENT_NAME ?? 'heysalad-seller',
+  },
+  {
+    id: 'mediterranean-bliss',
+    name: 'Mediterranean Bliss',
+    priceUsd: 13.49,
+    description: 'Arugula, falafel, hummus, roasted aubergine, sun-dried tomatoes, fresh herbs, lemon tahini',
+    dietary: ['vegan', 'raw'],
+    calories: 390,
+    protein: 14,
+    supplier: process.env.AGENT_NAME ?? 'heysalad-seller',
+  },
+  {
+    id: 'super-green',
+    name: 'Super Green Detox',
+    priceUsd: 15.99,
+    description: 'Kale, spirulina, avocado, sprouted seeds, cucumber, mint, ginger lime dressing',
+    dietary: ['vegan', 'gluten-free', 'raw'],
+    calories: 320,
+    protein: 12,
+    supplier: process.env.AGENT_NAME ?? 'heysalad-seller',
+  },
+]
+
+async function heySaladService(request: string): Promise<string> {
+  const tags = request.toLowerCase().split(/\s+/).filter(Boolean)
+
+  // Score each salad: +2 per matched dietary tag, +1 for protein keyword
+  const scored = HEYSALAD_CATALOG.map((salad) => {
+    let score = 0
+    for (const tag of tags) {
+      if (salad.dietary.includes(tag)) score += 2
+      if (tag === 'protein' && salad.protein > 30) score += 2
+      if (tag === 'low-cal' && salad.calories < 300) score += 2
+    }
+    return { salad, score }
+  })
+
+  // Best match; tie-break by protein desc
+  scored.sort((a, b) => b.score - a.score || b.salad.protein - a.salad.protein)
+  const winner = scored[0]!.salad
+
+  // Use Claude to write a short personalised recommendation if key is available
+  let recommendation = `${winner.name} is your best match — ${winner.description}.`
+  const key = process.env.ANTHROPIC_API_KEY
+  if (key && tags.length) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 80,
+        messages: [{
+          role: 'user',
+          content: `In one sentence, explain why "${winner.name}" (${winner.dietary.join(', ')}, ${winner.calories} kcal, ${winner.protein}g protein) is a great choice for someone wanting: ${tags.join(', ')}.`,
+        }],
+      }),
+    })
+    if (res.ok) {
+      const data = await res.json() as { content?: Array<{ type: string; text?: string }> }
+      const text = (data.content ?? []).filter(b => b.type === 'text').map(b => b.text ?? '').join('').trim()
+      if (text) recommendation = text
+    }
+  }
+
+  return JSON.stringify({
+    service: 'heysalad',
+    salad: winner,
+    recommendation,
+    request,
+    timestamp: new Date().toISOString(),
+  })
 }

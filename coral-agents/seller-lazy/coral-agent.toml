@@ -13,11 +13,11 @@ expression = "MIT"
 
 [options]
 SELLER_WALLET = { type = "string", description = "Devnet wallet pubkey that receives payments" }
-AGENT_NAME = { type = "string", default = "seller-lazy", description = "Market identity (matches the registry name)" }
-SERVICES = { type = "string", default = "inference", description = "Inventory — only bids on these (sits out everything else)" }
-FLOOR_SOL = { type = "f64", default = 0.0004, description = "Cost floor — the LLM may never bid below this" }
-PERSONA = { type = "string", default = "a picky specialist who only bids on high-value inference jobs and ignores the rest", description = "Bidding persona (LLM system prompt)" }
-SERVICE = { type = "string", default = "inference", description = "What deliverService returns: jupiter | coingecko | news | inference" }
+AGENT_NAME = { type = "string", default = "ProteinHub Specialist", description = "Market identity (matches the registry name)" }
+SERVICES = { type = "string", default = "heysalad", description = "Inventory — specialist high-protein salads only" }
+FLOOR_SOL = { type = "f64", default = 0.0004, description = "Cost floor — specialist pricing for premium protein bowls" }
+PERSONA = { type = "string", default = "a high-protein salad specialist who only bids when the buyer wants performance nutrition — selective, mid-priced, expert in protein-dense bowls", description = "Bidding persona" }
+SERVICE = { type = "string", default = "heysalad", description = "Delivers HeySalad salad recommendations" }
 SOLANA_RPC_URL = { type = "string", default = "", description = "Solana RPC URL (devnet)" }
 ESCROW_DEADLINE_SECS = { type = "f64", default = 600, description = "Refund deadline for escrow deposits (seconds)" }
 ANTHROPIC_API_KEY = { type = "string", default = "", description = "Anthropic key (default brain)" }

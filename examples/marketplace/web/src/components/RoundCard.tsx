@@ -3,6 +3,7 @@ import { StatusPill } from './StatusPill'
 import { BidRow, DeclinedRow } from './BidRow'
 import { SettlementBadge } from './SettlementBadge'
 import { WorldCupPanel } from './WorldCupPanel'
+import { SaladPanel } from './SaladPanel'
 
 /** One auction round: the need, the competing bids, the award + reasoning, and on-chain settlement. */
 export function RoundCard({ round }: { round: Round }) {
@@ -35,11 +36,12 @@ export function RoundCard({ round }: { round: Round }) {
         </p>
       )}
 
-      {round.delivered && (
-        (round.delivered.data as { service?: string } | undefined)?.service === 'txline-edge'
-          ? <WorldCupPanel edge={round.delivered.data as Parameters<typeof WorldCupPanel>[0]['edge']} />
-          : <pre className="delivered" data-testid="delivered">{round.delivered.raw}</pre>
-      )}
+      {round.delivered && (() => {
+        const svc = (round.delivered.data as { service?: string } | undefined)?.service
+        if (svc === 'txline-edge') return <WorldCupPanel edge={round.delivered.data as Parameters<typeof WorldCupPanel>[0]['edge']} />
+        if (svc === 'heysalad') return <SaladPanel data={round.delivered.data as Parameters<typeof SaladPanel>[0]['data']} />
+        return <pre className="delivered" data-testid="delivered">{round.delivered.raw}</pre>
+      })()}
 
       <footer className="settle-row">
         {round.deposit && <SettlementBadge label={`deposit ${round.escrow?.amountSol ?? ''} SOL`} sig={round.deposit.sig} />}

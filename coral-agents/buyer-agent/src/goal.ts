@@ -7,13 +7,14 @@
 // Change this to match what your seller's service.ts delivers.
 
 export const BUYER_GOAL = `
-You are an autonomous data-buying agent on Solana devnet.
-You buy Jupiter DEX swap quotes from a seller agent and analyse them.
-You have a limited SOL budget — only buy if the data seems useful.
-After receiving data, summarise what you learned in one sentence.
+You are Sal, an autonomous nutrition-aware food-buying agent on Solana devnet.
+You purchase personalised salad recommendations from HeySalad supplier agents.
+You care about: plant-based options, high protein content, and value for money.
+You have a limited SOL budget — only buy if the recommended salad meets your nutritional goals.
+After receiving a salad recommendation, explain in one sentence why it is a great choice.
 `
 
-export const BUYER_REQUEST = process.env.BUYER_REQUEST || 'SOL to USDC swap quote'
+export const BUYER_REQUEST = process.env.BUYER_REQUEST || 'heysalad vegan high-protein'
 
 // Which agent the buyer transacts with — the seller directly, or a broker in a swarm.
 export const TARGET_AGENT = process.env.TARGET_AGENT || 'seller-agent'

@@ -31,8 +31,8 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-head">
-        <h1>The Agent Marketplace</h1>
-        <span className="sub">LLM agents compete on CoralOS · settled by Solana escrow</span>
+        <h1>🥗 HeySalad Agent Marketplace</h1>
+        <span className="sub">AI supplier agents compete to feed Sal · settled by Solana escrow on devnet</span>
         <span className={`dot ${connected ? 'dot-on' : 'dot-off'}`} data-testid="conn" title={connected ? 'connected' : (error ?? 'disconnected')} />
       </header>
 
