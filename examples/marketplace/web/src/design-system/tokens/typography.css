@@ -1,0 +1,35 @@
+/* HeySalad typography tokens
+   Grandstander = display/headlines (rounded, playful, short & large).
+   Figtree = body/UI (readable everywhere). Rule: sentence-length or <16px → Figtree. */
+
+:root {
+  --font-display: "Grandstander", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, sans-serif;
+
+  /* Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Type scale (web/product) */
+  --text-display: 56px;   /* Grandstander Bold — hero statements */
+  --text-h1: 36px;        /* Grandstander Bold */
+  --text-h2: 26px;        /* Grandstander Bold/SemiBold */
+  --text-h3: 20px;        /* Figtree SemiBold */
+  --text-body-lg: 18px;   /* Figtree */
+  --text-base: 16px;      /* Figtree Regular — default body */
+  --text-sm: 14px;        /* Figtree — captions, labels */
+  --text-xs: 13px;        /* Figtree — fine print */
+  --text-button: 16px;    /* Figtree SemiBold */
+
+  /* Line heights */
+  --leading-tight: 1.1;   /* display & headlines */
+  --leading-snug: 1.3;    /* subheads */
+  --leading-normal: 1.55; /* body copy */
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;  /* large display */
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;    /* small caps labels */
+}

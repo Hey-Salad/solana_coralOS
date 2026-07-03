@@ -1,0 +1,54 @@
+/* HeySalad color tokens
+   Brand palette is warm & saturated; White carries negative space.
+   Cherry Red is the hero accent — never body copy on white below 18px. */
+
+:root {
+  /* ---- Brand primitives ---- */
+  --cherry-red: #ed4c4c;   /* primary brand color — Sal, logo, primary CTAs */
+  --peach: #faa09a;        /* secondary — hover, illustration fills */
+  --light-peach: #ffd0cd;  /* tertiary — backgrounds, card fills */
+  --white: #ffffff;
+
+  /* Cherry tints/shades for states (derived, stay in-family) */
+  --cherry-red-hover: #d83f3f;   /* darker — primary hover */
+  --cherry-red-press: #c23636;   /* darker still — primary active */
+  --cherry-red-soft: #fbe4e4;    /* faint cherry wash — selected rows, focus halos */
+
+  /* ---- Neutrals (warm-leaning grayscale for text & lines) ---- */
+  --ink-900: #1f1416;   /* near-black, warm — headings, Sal's swirl */
+  --ink-700: #4a3f41;   /* primary body text */
+  --ink-500: #7a6e70;   /* secondary text, captions */
+  --ink-300: #b7adae;   /* disabled text, placeholders */
+  --line-200: #ece5e5;  /* hairline borders, dividers */
+  --line-100: #f6f1f1;  /* subtle fills, hover surfaces */
+  --cream: #fff8f6;     /* warm off-white app background */
+
+  /* ---- Semantic / utility (used sparingly, not brand colors) ---- */
+  --success: #3b9c6d;
+  --success-soft: #e4f3ec;
+  --warning: #e0922f;
+  --warning-soft: #fbeed9;
+  --error: #d83f3f;
+  --error-soft: #fbe4e4;
+
+  /* ---- Semantic aliases ---- */
+  --brand: var(--cherry-red);
+  --brand-hover: var(--cherry-red-hover);
+  --brand-press: var(--cherry-red-press);
+
+  --bg-base: var(--white);
+  --bg-warm: var(--cream);
+  --surface-card: var(--white);
+  --surface-warm: var(--light-peach);
+  --surface-muted: var(--line-100);
+
+  --text-strong: var(--ink-900);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-disabled: var(--ink-300);
+  --text-on-brand: var(--white);
+
+  --border: var(--line-200);
+  --border-strong: var(--ink-300);
+  --focus-ring: var(--cherry-red);
+}

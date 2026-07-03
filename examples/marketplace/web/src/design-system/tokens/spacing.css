@@ -1,0 +1,38 @@
+/* HeySalad spacing, radius, shadow tokens
+   Rounded, friendly geometry echoes Sal & Grandstander letterforms. */
+
+:root {
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Corner radii — generous & soft */
+  --radius-sm: 8px;
+  --radius-md: 12px;   /* default card/input */
+  --radius-lg: 16px;   /* large cards, sheets */
+  --radius-xl: 24px;   /* hero cards, modals */
+  --radius-pill: 999px; /* buttons, chips, avatars */
+
+  /* Shadows — soft, warm-tinted, never harsh */
+  --shadow-xs: 0 1px 2px rgba(31, 20, 22, 0.06);
+  --shadow-sm: 0 2px 8px rgba(31, 20, 22, 0.07);
+  --shadow-md: 0 6px 20px rgba(31, 20, 22, 0.10);
+  --shadow-lg: 0 16px 40px rgba(31, 20, 22, 0.14);
+  --shadow-brand: 0 8px 24px rgba(237, 76, 76, 0.30); /* cherry glow under primary CTAs */
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* @kind other */ /* playful overshoot */
+  --dur-fast: 120ms; /* @kind other */
+  --dur-base: 200ms; /* @kind other */
+  --dur-slow: 320ms; /* @kind other */
+}
