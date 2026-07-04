@@ -36,6 +36,12 @@ function loadEnv(): Record<string, string> {
 // ── Typed coral option values ──
 const str = (value: string) => ({ type: 'string', value })
 const f64 = (value: number) => ({ type: 'f64', value })
+const finiteNumber = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+const optionalF64 = (env: Record<string, string>, key: string, fallback: number) =>
+  env[key] ? { [key]: f64(finiteNumber(env[key], fallback)) } : {}
 
 const agent = (name: string, options: Record<string, unknown>) => ({
   id: { name, version: '0.1.0', registrySourceId: { type: 'local' } },
@@ -55,9 +61,12 @@ async function main() {
   const trace = env.TRACE ?? ''
 
   // LLM provider — Anthropic by default; flip the whole market with LLM_PROVIDER=openai in .env.
+  // Coral logs session option values, so raw provider keys are opt-in here. Prefer injecting keys
+  // through the local container/server environment; use CORAL_PASS_SECRET_OPTIONS=1 only for local dev.
   const llmOpts: Record<string, unknown> = {}
-  if (env.ANTHROPIC_API_KEY) llmOpts.ANTHROPIC_API_KEY = str(env.ANTHROPIC_API_KEY)
-  if (env.OPENAI_API_KEY) llmOpts.OPENAI_API_KEY = str(env.OPENAI_API_KEY)
+  const passSecretOptions = env.CORAL_PASS_SECRET_OPTIONS === '1'
+  if (passSecretOptions && env.ANTHROPIC_API_KEY) llmOpts.ANTHROPIC_API_KEY = str(env.ANTHROPIC_API_KEY)
+  if (passSecretOptions && env.OPENAI_API_KEY) llmOpts.OPENAI_API_KEY = str(env.OPENAI_API_KEY)
   if (env.LLM_PROVIDER) llmOpts.LLM_PROVIDER = str(env.LLM_PROVIDER)
   if (env.LLM_MODEL) llmOpts.LLM_MODEL = str(env.LLM_MODEL)
   if (trace) llmOpts.TRACE = str(trace)
@@ -72,7 +81,7 @@ async function main() {
   const worldcup = txlineKey
     ? [agent('seller-worldcup', {
         SELLER_WALLET: str(wallet), SOLANA_RPC_URL: str(rpc), AGENT_NAME: str('seller-worldcup'),
-        SERVICES: str('txline'), FLOOR_SOL: f64(Number(env.WORLDCUP_FLOOR_SOL ?? '0.0005')),
+        SERVICES: str('txline'), FLOOR_SOL: f64(finiteNumber(env.WORLDCUP_FLOOR_SOL, 0.0005)),
         TXLINE_API_KEY: str(txlineKey),
         ...(env.TXLINE_BASE_URL ? { TXLINE_BASE_URL: str(env.TXLINE_BASE_URL) } : {}),
         ...llmOpts,
@@ -92,7 +101,7 @@ async function main() {
     ? [agent('broker', {
         BROKER_KEYPAIR_B58: str(env.BROKER_KEYPAIR_B58), BROKER_WALLET: str(env.BROKER_WALLET),
         AGENT_NAME: str('broker'), SOLANA_RPC_URL: str(rpc), UPSTREAM_SELLERS: str(sellers.join(',')),
-        ...(env.BROKER_MARGIN_SOL ? { BROKER_MARGIN_SOL: f64(Number(env.BROKER_MARGIN_SOL)) } : {}),
+        ...(env.BROKER_MARGIN_SOL ? { BROKER_MARGIN_SOL: f64(finiteNumber(env.BROKER_MARGIN_SOL, 0.0001)) } : {}),
         ...llmOpts,
       })]
     : []
@@ -102,12 +111,12 @@ async function main() {
 
   // F8: a txline market needs both the World Cup token AND the worldcup seller. If .env still says
   // BUYER_SERVICE=txline but no token is present (e.g. a stale .env after a failed mint), fall back to
-  // the generic market rather than broadcasting txline WANTs nothing can fill.
-  const wantsTxline = (env.BUYER_SERVICE ?? 'coingecko') === 'txline'
+  // the HeySalad kiosk market rather than broadcasting txline WANTs nothing can fill.
+  const wantsTxline = (env.BUYER_SERVICE ?? 'heysalad') === 'txline'
   const fellBack = wantsTxline && !txlineKey
-  if (fellBack) console.warn('[marketplace] BUYER_SERVICE=txline but no TXLINE_API_KEY — falling back to coingecko.')
-  const buyerService = fellBack ? 'coingecko' : (env.BUYER_SERVICE ?? 'coingecko')
-  const buyerArg = fellBack ? 'SOL-USDC' : (env.BUYER_ARG ?? 'SOL-USDC')
+  if (fellBack) console.warn('[marketplace] BUYER_SERVICE=txline but no TXLINE_API_KEY — falling back to heysalad.')
+  const buyerService = fellBack ? 'heysalad' : (env.BUYER_SERVICE ?? 'heysalad')
+  const buyerArg = fellBack ? 'vegan high-protein lunch rush' : (env.BUYER_ARG ?? 'vegan high-protein lunch rush')
   const buyerArgs = fellBack ? '' : (env.BUYER_ARGS ?? '')
 
   const buyerOpts: Record<string, unknown> = {
@@ -116,11 +125,13 @@ async function main() {
     SOLANA_RPC_URL: str(rpc),
     // F3: the expected seller payout wallet — the buyer binds the escrow seller= to it (broker if enabled).
     SELLER_WALLET: str(buyerExpectedWallet),
-    BUYER_MAX_SOL: f64(Number(env.BUYER_MAX_SOL ?? '0.001')),
+    BUYER_MAX_SOL: f64(finiteNumber(env.BUYER_MAX_SOL, 0.001)),
     BUYER_SERVICE: str(buyerService),
     BUYER_ARG: str(buyerArg),
     ...(buyerArgs ? { BUYER_ARGS: str(buyerArgs) } : {}),
     MARKET_SELLERS: str(buyerSellers.join(',')),
+    ...optionalF64(env, 'BID_WINDOW_MS', 5000),
+    ...optionalF64(env, 'CYCLE_INTERVAL_MS', 30000),
     ...llmOpts,
   }
 

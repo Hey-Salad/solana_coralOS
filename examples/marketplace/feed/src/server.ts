@@ -12,7 +12,8 @@
  * hitting coral — used by the e2e so it exercises the REAL fold/parse path with no devnet.
  *
  * Env: CORAL_SERVER_URL (default http://localhost:5555), CORAL_TOKEN (default dev),
- *      SESSION, MARKET_SELLERS (csv for the declined column), FEED_FIXTURE, PORT (default 4000).
+ *      SESSION, MARKET_SELLERS (csv for the declined column), FEED_FIXTURE,
+ *      HOST (default 127.0.0.1), PORT (default 4000).
  */
 import express from 'express'
 import { readFileSync } from 'node:fs'
@@ -27,6 +28,7 @@ const MARKET_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..') // 
 const BASE = process.env.CORAL_SERVER_URL ?? 'http://localhost:5555'
 const TOKEN = process.env.CORAL_TOKEN ?? 'dev'
 const NS = 'default'
+const HOST = process.env.HOST ?? '127.0.0.1'
 const PORT = Number(process.env.PORT ?? 4000)
 const DEFAULT_SESSION = process.env.SESSION ?? ''
 const FIXTURE = process.env.FEED_FIXTURE
@@ -81,4 +83,4 @@ app.get('/api/feed', async (req, res) => {
   }
 })
 
-app.listen(PORT, () => console.error(`[feed] http://localhost:${PORT}/api/feed  (${FIXTURE ? `fixture=${FIXTURE}` : `coral=${BASE}`})`))
+app.listen(PORT, HOST, () => console.error(`[feed] http://${HOST}:${PORT}/api/feed  (${FIXTURE ? `fixture=${FIXTURE}` : `coral=${BASE}`})`))

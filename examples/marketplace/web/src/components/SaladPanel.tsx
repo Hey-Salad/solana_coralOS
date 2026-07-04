@@ -19,22 +19,19 @@ interface HeySaladDelivery {
   timestamp: string
 }
 
-const TAG_COLOURS: Record<string, { bg: string; color: string }> = {
-  vegan:          { bg: '#f0fdf4', color: '#16a34a' },
-  vegetarian:     { bg: '#f0fdf4', color: '#15803d' },
-  'gluten-free':  { bg: '#fffbeb', color: '#b45309' },
-  raw:            { bg: '#ecfdf5', color: '#059669' },
-  'high-protein': { bg: '#fef2f2', color: '#dc2626' },
-}
-
 export function SaladPanel({ data }: { data: HeySaladDelivery }) {
-  const { salad, recommendation } = data
+  const { salad, recommendation, request } = data
   const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
   return (
     <div className="salad-panel" data-testid="salad-panel">
+      <div className="salad-meta">
+        <span>Paid service</span>
+        <strong>deliverService("heysalad {request}")</strong>
+      </div>
+
       <div className="salad-head">
-        🥗 <strong>{salad.name}</strong>
+        <strong>{salad.name}</strong>
         <span className="salad-price">{usd.format(salad.priceUsd)}</span>
       </div>
 
@@ -42,9 +39,8 @@ export function SaladPanel({ data }: { data: HeySaladDelivery }) {
 
       <div className="salad-tags">
         {salad.dietary.map(tag => {
-          const c = TAG_COLOURS[tag] ?? { bg: '#f6f1f1', color: '#4a3f41' }
           return (
-            <span key={tag} className="salad-tag" style={{ background: c.bg, color: c.color }}>
+            <span key={tag} className="salad-tag">
               {tag}
             </span>
           )
@@ -52,13 +48,17 @@ export function SaladPanel({ data }: { data: HeySaladDelivery }) {
       </div>
 
       <div className="salad-stats">
-        <span>🔥 {salad.calories} kcal</span>
-        <span>💪 {salad.protein}g protein</span>
-        <span>🏪 {salad.supplier}</span>
+        <span>{salad.calories} kcal</span>
+        <span>{salad.protein}g protein</span>
+        <span>{salad.supplier}</span>
       </div>
 
       <p className="salad-rec">
         <em>"{recommendation}"</em>
+      </p>
+
+      <p className="salad-proof">
+        Kiosk value: a customer-ready recommendation with supplier, price, calories, protein, and dietary fit.
       </p>
     </div>
   )

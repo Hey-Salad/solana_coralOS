@@ -18,6 +18,7 @@ export default function App() {
   const settledCount = rounds.filter((round) => round.status === 'settled').length
   const latestRound = rounds.reduce((max, round) => Math.max(max, round.round), 0)
   const sessionDisplay = session ? `${session.slice(0, 10)}...` : 'No session'
+  const startLabel = starting ? 'Starting...' : (session ? 'New market' : 'Start market')
 
   async function onStart() {
     setStarting(true)
@@ -55,12 +56,12 @@ export default function App() {
         <div className="hero-grid">
           <div className="hero-copy">
             <h1 id="hero-title">
-              <span>Food agents compete.</span>
-              <span>Solana settles the round.</span>
+              <span>Kiosk agents buy.</span>
+              <span>Food agents earn.</span>
             </h1>
             <p className="sub">
-              A live HeySalad marketplace where supplier agents bid over CoralOS,
-              deliver the best result, and settle through devnet escrow.
+              A live HeySalad kiosk market where supplier agents bid over CoralOS,
+              deliver a paid food recommendation, and settle through Solana devnet escrow.
             </p>
             <div className="session-bar">
               <input
@@ -70,7 +71,7 @@ export default function App() {
                 onChange={(e) => setSession(e.target.value.trim())}
               />
               <button onClick={onStart} disabled={starting} data-testid="start">
-                {starting ? 'Starting...' : 'Start a market'}
+                {startLabel}
               </button>
             </div>
             {startErr && <p className="start-err" data-testid="start-err">{startErr}</p>}
@@ -79,8 +80,8 @@ export default function App() {
           <aside className="market-preview" aria-label="Market status">
             <div className="preview-head">
               <div>
-                <p className="section-kicker">CoralOS market</p>
-                <h2>{session ? 'Session running' : 'Ready for a round'}</h2>
+                <p className="section-kicker">Kiosk market</p>
+                <h2>{session ? 'Session running' : 'Ready to hire agents'}</h2>
               </div>
               <span className={`conn-chip ${connectionClass}`}>
                 <span className="dot" />
@@ -107,22 +108,22 @@ export default function App() {
               <div className="flow-step">
                 <span>1</span>
                 <div>
-                  <strong>Buyer broadcasts need</strong>
-                  <p>CoralOS opens the market to supplier agents.</p>
+                  <strong>Kiosk broadcasts need</strong>
+                  <p>CoralOS opens the lunch request to supplier agents.</p>
                 </div>
               </div>
               <div className="flow-step">
                 <span>2</span>
                 <div>
-                  <strong>Seller agents bid</strong>
-                  <p>Only agents with the right service inventory respond.</p>
+                  <strong>Supplier agents bid</strong>
+                  <p>Budget, premium, and specialist agents price their service.</p>
                 </div>
               </div>
               <div className="flow-step">
                 <span>3</span>
                 <div>
-                  <strong>Escrow releases payment</strong>
-                  <p>Deposit and release links resolve on Solana devnet.</p>
+                  <strong>Escrow pays the winner</strong>
+                  <p>The delivery unlocks payment with devnet Explorer proof.</p>
                 </div>
               </div>
             </div>
@@ -147,7 +148,7 @@ export default function App() {
         </div>
         <main>
           {session ? <MarketView rounds={rounds} /> : (
-            <p className="empty">Start a market to watch supplier agents bid and settle on devnet.</p>
+            <p className="empty">Start a market to watch the kiosk buy from supplier agents and settle on devnet.</p>
           )}
         </main>
       </section>

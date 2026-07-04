@@ -22,7 +22,14 @@ const bad  = (m, fix)  => { fails++; console.log(`  ${c('31', 'FAIL')} ${m}`); i
 const warn = (m, fix)  => { warns++; console.log(`  ${c('33', 'WARN')} ${m}`); if (fix) console.log(`       ${c('90', '→ ' + fix)}`) }
 const has  = (cmd)     => { try { execSync(cmd, { stdio: 'ignore' }); return true } catch { return false } }
 const sleep = (ms)     => new Promise(r => setTimeout(r, ms))
-const reachable = async (url) => { try { await fetch(url, { signal: AbortSignal.timeout(2000) }); return true } catch (e) { return e.name !== 'TypeError' && !String(e).includes('ECONNREFUSED') && !String(e.cause).includes('ECONNREFUSED') } }
+const reachable = async (url, init = {}) => {
+  try {
+    const response = await fetch(url, { ...init, signal: AbortSignal.timeout(2000) })
+    return response.ok
+  } catch (e) {
+    return e.name !== 'TypeError' && !String(e).includes('ECONNREFUSED') && !String(e.cause).includes('ECONNREFUSED')
+  }
+}
 
 console.log(c('1', '\nsol_coralOS — readiness check\n'))
 
@@ -66,7 +73,9 @@ if (!existsSync(envPath)) {
 
 // ── 3. Stack ──────────────────────────────────────────────────────────────────
 console.log(c('1', '\nStack'))
-const coralUp = await reachable('http://localhost:5555')
+const coralUp = await reachable('http://127.0.0.1:5555/api/v1/registry', {
+  headers: { Authorization: 'Bearer dev' },
+})
 const feedUp  = await reachable('http://localhost:4000/api/health')
 coralUp ? ok('coral-server reachable on :5555') : warn('coral-server not reachable on :5555', 'start it: docker compose up -d coral')
 feedUp  ? ok('feed server reachable on :4000')  : warn('feed server not reachable on :4000',  'start the dashboard: node scripts/dashboard.js  (or: npm run dev)')

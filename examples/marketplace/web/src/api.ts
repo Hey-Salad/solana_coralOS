@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Feed } from './types'
 
-const FEED_URL = import.meta.env.VITE_FEED_URL ?? 'http://localhost:4000'
+const rawFeedUrl = import.meta.env.VITE_FEED_URL ?? ''
+const FEED_URL = rawFeedUrl.replace(/\/$/, '')
+
+function feedPath(path: string) {
+  return `${FEED_URL}${path}`
+}
 
 /** Ask the feed server to launch a market session; returns its id. (Fund wallets first.) */
 export async function startMarket(): Promise<string> {
-  const r = await fetch(`${FEED_URL}/api/start`, { method: 'POST' })
+  const r = await fetch(feedPath('/api/start'), { method: 'POST' })
   const body = (await r.json()) as { session?: string; error?: string }
   if (!r.ok || !body.session) throw new Error(body.error ?? `start failed (${r.status})`)
   return body.session
@@ -33,7 +38,7 @@ export function useFeed(session: string, intervalMs = 1000): FeedState {
     }
     const tick = async () => {
       try {
-        const r = await fetch(`${FEED_URL}/api/feed?session=${encodeURIComponent(session)}`)
+        const r = await fetch(feedPath(`/api/feed?session=${encodeURIComponent(session)}`))
         if (!r.ok) throw new Error(`feed ${r.status}`)
         const feed = (await r.json()) as Feed
         if (!stop.current) setState({ rounds: feed.rounds ?? [], connected: true })

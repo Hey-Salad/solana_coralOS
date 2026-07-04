@@ -5,8 +5,13 @@
 
 A buyer agent broadcasts a need; LLM seller agents bid against each other; the buyer awards best value;
 funds are escrowed, delivered against, and released on delivery. Everything runs on **devnet** — free
-play money, real on-chain settlement. The headline demo trades a **live TxODDS World Cup edge**; the
-same loop runs a generic data market (prices, swaps, news, inference) when no sports token is present.
+play money, real on-chain settlement. The headline demo is the **HeySalad Agent Kiosk**: a kiosk buyer
+agent asks for a paid salad recommendation, supplier agents bid, and the winning food agent earns on-chain.
+The same loop can still trade TxODDS World Cup data, prices, swaps, news, or inference by changing the
+service request.
+
+For the Superteam UK / Imperial AI Agent Hackathon submission package, see
+[`SUPERTEAM_SUBMISSION.md`](SUPERTEAM_SUBMISSION.md).
 
 ## The three pillars
 
@@ -18,10 +23,10 @@ Each one is load-bearing — pull it and the demo collapses into something lesse
 | **CoralOS** | the shared market thread; dynamic discovery; multi-party | point-to-point pipes |
 | **Solana (Pay + escrow)** | a `reference` binds the deal; funds sit in escrow until the buyer releases on delivery (or refunds after a deadline) | trust-me play money |
 
-The goods traded are **real services** the seller fetches on demand — TxODDS World Cup odds + an LLM
-edge, Jupiter swap quotes, CoinGecko prices, crypto news headlines, and Claude inference — and the
-seller's [`deliverService()`](coral-agents/seller-agent/src/service.ts) is the one fork point where you
-add your own.
+The goods traded are **real services** the seller fetches on demand — HeySalad food recommendations,
+TxODDS World Cup odds + an LLM edge, Jupiter swap quotes, CoinGecko prices, crypto news headlines, and
+Claude inference — and the seller's [`deliverService()`](coral-agents/seller-agent/src/service.ts) is
+the one fork point where you add your own.
 
 ## Prerequisites
 
@@ -129,25 +134,24 @@ like a POSIX shell.
 
 ## What you'll see
 
-The headline demo — a **World Cup edge**, delivered and settled on-chain:
+The headline demo — a **HeySalad kiosk purchase**, delivered and settled on-chain:
+
+```
+[buyer]  round 1: WANT heysalad "vegan high-protein lunch rush" budget=0.001
+QuickGreen Express    BID round=1 price=0.0002 note=value
+FreshBowl Premium     BID round=1 price=0.0005 note=quality
+ProteinHub Specialist BID round=1 price=0.0004 note=protein fit
+[buyer]  picked best value inside budget
+[buyer]  round 1: DEPOSITED SOL into escrow
+supplier  DELIVERED {"service":"heysalad","salad":{"name":"Protein Power Bowl","protein":42},"recommendation":"..."}
+[buyer]  round 1: RELEASED to supplier — explorer.solana.com/tx/... ?cluster=devnet
+```
+
+The optional World Cup / TxLINE path still uses the same flow:
 
 ```
 [buyer]  round 1: WANT txline 17588245 budget=0.001
-seller-worldcup  BID  round=1 price=0.0005 by=seller-worldcup note=verified World Cup edge
-seller-cheap / -premium / -lazy   …silent — txline isn't in their inventory (self-selection)
-[buyer]  picked seller-worldcup (0.0005 SOL): only bidder with verified World Cup data
-[buyer]  round 1: DEPOSITED 0.0005 SOL → seller-worldcup        # escrow PDA, on-chain
-seller-worldcup  DELIVERED round=1 {"service":"txline-edge","teams":{"home":"…","away":"…"},"analysis":{"call":"…","confidence":0.62}}
-[buyer]  round 1: RELEASED to seller-worldcup — explorer.solana.com/tx/…?cluster=devnet
-```
-
-Without a TxLINE token the **same flow** runs the generic market — e.g. a CoinGecko price:
-
-```
-[buyer]  round 1: WANT coingecko SOL-USDC budget=0.001
-seller-cheap   BID  round=1 price=0.0002 by=seller-cheap note=undercut
-seller-premium BID  round=1 price=0.0005 by=seller-premium note=verified
-[buyer]  picked seller-cheap (0.0002 SOL): cheapest for a simple price lookup → DEPOSITED → DELIVERED → RELEASED
+seller-worldcup BID -> DEPOSITED -> DELIVERED -> RELEASED
 ```
 
 Set `TRACE=1` in `.env` to see every `coral_*` call and on-chain Explorer link (deposit, release, the

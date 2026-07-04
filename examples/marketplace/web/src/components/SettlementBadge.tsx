@@ -10,7 +10,7 @@ export function SettlementBadge({ label, sig }: { label: string; sig: string }) 
       target="_blank"
       rel="noreferrer"
     >
-      {label} ↗
+      {label} Explorer
     </a>
   )
 }

@@ -37,7 +37,7 @@ export function WorldCupPanel({ edge }: { edge: Edge }) {
     : `fixture ${edge.fixtureId}`
   return (
     <div className="wc-panel" data-testid="wc-edge">
-      <div className="wc-head">⚽ {title}{edge.teams?.competition ? ` · ${edge.teams.competition}` : ''}</div>
+      <div className="wc-head">{title}{edge.teams?.competition ? ` · ${edge.teams.competition}` : ''}</div>
       {names.length > 0 && (
         <div className="wc-odds">
           {names.map((name, i) => {
@@ -55,7 +55,7 @@ export function WorldCupPanel({ edge }: { edge: Edge }) {
       {call && (
         <p className="wc-call">
           <strong>edge:</strong> {call}
-          {confidence != null && <span className="wc-conf"> · {Math.round(Number(confidence) * 100)}% conf</span>}
+          {confidence != null && <span className="wc-conf"> · {Math.round(Number(confidence) * 100)}% confidence</span>}
         </p>
       )}
     </div>
