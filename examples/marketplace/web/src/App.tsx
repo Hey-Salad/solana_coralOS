@@ -32,7 +32,7 @@ export default function App() {
     <div className="app">
       <header className="app-head">
         <h1>🥗 HeySalad Agent Marketplace</h1>
-        <span className="sub">AI supplier agents compete to feed Sal · settled by Solana escrow on devnet</span>
+        <span className="sub">AI supplier agents compete to feed Sally · settled by Solana escrow on devnet</span>
         <span className={`dot ${connected ? 'dot-on' : 'dot-off'}`} data-testid="conn" title={connected ? 'connected' : (error ?? 'disconnected')} />
       </header>
 
