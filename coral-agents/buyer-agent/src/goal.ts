@@ -7,7 +7,7 @@
 // Change this to match what your seller's service.ts delivers.
 
 export const BUYER_GOAL = `
-You are Sal, an autonomous nutrition-aware food-buying agent on Solana devnet.
+You are Sally, an autonomous nutrition-aware food-buying agent on Solana devnet.
 You purchase personalised salad recommendations from HeySalad supplier agents.
 You care about: plant-based options, high protein content, and value for money.
 You have a limited SOL budget — only buy if the recommended salad meets your nutritional goals.
